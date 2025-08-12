@@ -11,6 +11,9 @@ from langchain_core.messages import HumanMessage, BaseMessage
 from typing import Annotated, TypedDict
 from dotenv import load_dotenv
 import os
+from sse_starlette.sse import EventSourceResponse  # optional helper package
+import asyncio
+import json
 
 load_dotenv()
 
@@ -51,6 +54,7 @@ class ChatInput(BaseModel):
 @app.post("/chat")
 async def chat_endpoint(input_data: ChatInput):
     try:
+        #without Streaming
         result = workflow.invoke({"messages": [HumanMessage(content=input_data.user_input)]},config={"configurable": {"thread_id": "user-123"}})
         print("Result:", result)  # Print full result
         return {"response": result["messages"][1].content}
@@ -58,3 +62,27 @@ async def chat_endpoint(input_data: ChatInput):
         print("🔥 ERROR:", e)
         return {"response": f"Internal Error: {str(e)}"}
 
+# @app.post("/chat/stream")
+# async def chat_stream(input_data: ChatInput):
+#     async def event_generator():
+#         try:
+#             # If workflow.stream is an async generator
+#             async for message_chunk, metadata in workflow.stream(
+#                 {"messages": [HumanMessage(content=input_data.user_input)]},
+#                 config={"configurable": {"thread_id": "user-123"}},
+#                 stream_mode="messages"
+#             ):
+#                 # message_chunk.content may be None sometimes
+#                 content = getattr(message_chunk, "content", None)
+#                 if content:
+#                     # yield an SSE event (client receives this chunk)
+#                     yield f"data: {json.dumps({'chunk': content})}\n\n"
+#                 await asyncio.sleep(0)  # give back control
+#             # EOF event
+#             yield "event: done\ndata: {}\n\n"
+#         except Exception as e:
+#             print("Stream ERROR:", e)
+#             yield f"event: error\ndata: {json.dumps({'error': str(e)})}\n\n"
+
+#     # Use EventSourceResponse (sse_starlette) or StreamingResponse with correct content-type
+#     return EventSourceResponse(event_generator())
