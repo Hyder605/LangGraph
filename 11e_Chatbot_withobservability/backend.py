@@ -12,6 +12,10 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph.message import add_messages
 load_dotenv()
 import sqlite3
+import os
+from langsmith import traceable
+
+os.environ['LANGCHAIN_PROJECT']="chatbot-project"
 
 
 
