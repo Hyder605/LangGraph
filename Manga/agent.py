@@ -103,7 +103,7 @@ class MangaState(TypedDict):
     refined_story:str
     extracted_features:dict
     character_feature:dict
-    directions_dialogue:dict
+    panel_scenes:dict
 
 def prompt_refinner(state:MangaState):
     user_story=state['input_story']
@@ -283,15 +283,15 @@ def manga_director(state: MangaState):
         retry_prompt = prompt + "\n\n⚠️ Reminder: You must output 4–5 panels, not fewer."
         output = structured_model_director.invoke(retry_prompt)
 
-    return {"manga_page": output}
+    return {"panel_scenes": output}
 
 
 
 story=prompt_refinner({'input_story':"A boy name Ibad fall in love with a girl named Aisha."})
 features=feature_extractor({"refined_story":story})
-character_makeup=character_makeup({"refined_story": story["refined_story"], "extracted_features": features["extracted_feature"]})
+character_mkp=character_makeup({"refined_story": story["refined_story"], "extracted_features": features["extracted_feature"]})
 
 
 from pprint import pprint
 
-pprint((character_makeup['character_makeup']))
+pprint((character_mkp['character_makeup']))
