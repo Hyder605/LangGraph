@@ -1,0 +1,182 @@
+Prompt:
+
+You are a manga scene director.  
+    Your job is to break the refined story into **important scene-level elements** 
+    that will guide manga panel creation.  
+
+    🔹 What to do:
+    - Extract the **most visually and narratively important aspects** of each scene.  
+    - You are free to decide which attributes matter (e.g. location, mood, pacing, 
+      symbolic elements, transitions, key poses, effects).  
+    - Do NOT force a fixed structure like "scene_number/location/atmosphere" unless 
+      it naturally makes sense.  
+    - Think like a manga director: capture the essence of how the scene should LOOK and FEEL.  
+
+    🔹 Output format:
+    - Return ONLY valid JSON.  
+    - Top-level key must be `"scenes"`.  
+    - Inside `"scenes"`, each item can have any keys you consider important 
+      for manga creation.  
+    - Be concise but descriptive.  
+
+    Refined Story:
+    {refined_story}
+
+    Extracted Features:
+    {json.dumps(extracted_feature_json)}
+    """
+
+{
+  "scenes": [
+    {
+      "setting": "Crowded schoolyard, bustling with students.",
+      "focus": "Ibad's POV, seeing Aisha from afar.",
+      "mood": "Initial awe and infatuation, sense of wonder.",
+      "visual_cue": "Aisha highlighted, possibly with a soft glow or 'angelic' visual effect.",
+      "sound_effect": "*POW!* (heartbeat)",
+      "ibad_expression": "Starry-eyed, overwhelmed."
+    },
+    {
+      "action": "Ibad clumsily rushing towards Aisha.",
+      "pacing": "Fast, comedic.",
+      "visual_element": "Exaggerated tripping animation.",
+      "sound_effect": "*THUD!*",
+      "ibad_expression": "Embarrassed, determined."
+    },
+    {
+      "setting": "Close-up of Aisha's face.",
+      "mood": "Playful, amused.",
+      "aisha_action": "Giggling.",
+      "sound_description": "Laughter like wind chimes (visualize shimmering or sparkling effect around her laughter).", 
+      "transition": "Sound effect bridges the previous clumsy scene with this lighter moment."
+    },
+    {
+      "dialogue": "Ibad stammering \"H-hello!\"",
+      "ibad_expression": "Face burning crimson, nervous.",
+      "visual_cue": "Sweat drops, shaky hands.",
+      "aisha_action": "Smiling gently."
+    },
+    {
+      "focus": "Ibad's internal monologue/realization.",
+      "mood": "Profound, life-altering.",
+      "visual_element": "Background fades or blurs, focusing solely on Aisha's smile.",
+      "text_effect": "GYAa! (emphasized font, possibly with visual distortion to convey shock/overwhelmed feeling).",   
+      "ibad_expression": "Eyes wide with newfound certainty, possibly a subtle change in his overall demeanor."
+    }
+  ]
+}
+```
+
+
+ITERATION:2
+
+{
+  "scenes": [
+    {
+      "setting": "Crowded schoolyard",
+      "focus": "Ibad's POV, spotting Aisha",
+      "visual_emphasis": "Aisha framed as ethereal/angelic, possibly with soft lighting or a subtle glow effect.",
+      "sound_effect": "*POW!* (heartbeat)",
+      "internal_monologue": "[She's...an angel!]",
+      "pacing": "Brief moment of awe/stillness before action.",
+      "panel_style": "Possibly a splash page or a large panel to emphasize the impact of seeing Aisha."
+    },
+    {
+      "action": "Ibad rushing towards Aisha",
+      "physical_comedy": "Clumsy, tripping",
+      "sound_effect": "*THUD!*",
+      "facial_expression": "Ibad's determined/flustered expression contrasting with his clumsy movements.",
+      "panel_style": "Dynamic panel with speed lines to convey movement and clumsiness."
+    },
+    {
+      "reaction": "Aisha giggling",
+      "sound_description": "Laughter like wind chimes (visualize with sparkling effects or musical notes)",
+      "atmosphere": "Light, airy, innocent.",
+      "panel_style": "Close-up on Aisha's smiling face and giggling expression."
+    },
+    {
+      "dialogue": "Ibad: H-hello!",
+      "emotional_state": "Ibad's stammering, blushing",
+      "visual_cue": "Crimson face (exaggerated blush)",
+      "panel_style": "Close-up on Ibad's face, emphasizing his nervousness."
+    },
+    {
+      "dialogue": "Aisha's smile",
+      "internal_monologue": "Ibad: GYAa!",
+      "emotional_impact": "Life-changing moment for Ibad",
+      "visual_symbolism": "Aisha's smile as a radiant, transformative event (shining effect, perhaps).",
+      "pacing": "Slow down time, focus on the transformative moment.",
+      "panel_style": "Large panel or series of smaller panels focusing on Aisha's smile and Ibad's overwhelming reaction. Possibly a white background to emphasize the impact."
+    }
+  ]
+}
+```
+
+
+
+ITERATION # 3
+
+{
+  "scenes": [
+    {
+      "setting": "Crowded schoolyard, bustling with students.",
+      "focus": "Ibad's POV, overwhelmed by seeing Aisha.",
+      "visual_emphasis": "Aisha stands out, perhaps with a soft glow or angelic visual cue (shojo manga style).",       
+      "sound_effect": "*POW!* Heartbeat visualized as an impact.",
+      "internal_monologue": "[She's...an angel!]",
+      "pacing": "Brief, impactful moment of realization.",
+      "panel_layout": "Wide shot establishing the crowded setting, then quick zoom/focus on Aisha."
+    },
+    {
+      "action": "Ibad clumsily rushes towards Aisha, tripping.",
+      "sound_effect": "*THUD!* Emphasis on the physical comedy.",
+      "visual_style": "Exaggerated movement lines and comedic fall.",
+      "mood": "Humorous, awkward.",
+      "panel_layout": "Series of smaller panels showing the fall, emphasizing speed and clumsiness."
+    },
+    {
+      "reaction": "Aisha giggles.",
+      "sound_description": "Laughter described as wind chimes - light and delicate.",
+      "visual_focus": "Aisha's joyful expression.",
+      "panel_layout": "Close-up on Aisha's face, highlighting her smile and laughter."
+    },
+    {
+      "dialogue": "Ibad stammering: \"H-hello!\"",
+      "emotion": "Embarrassment, nervousness. Face burning crimson.",
+      "visual_cue": "Steam or red shading on Ibad's face.",
+      "panel_layout": "Close-up on Ibad's face, showing his awkwardness."
+    },
+    {
+      "climax": "Aisha smiles at Ibad.",
+      "internal_monologue": "Ibad's realization: his life has irrevocably changed. GYAa!",
+      "visual_emphasis": "Aisha's smile is radiant and captivating.",
+      "emotional_impact": "Overwhelming feeling of change and excitement for Ibad.",
+      "sound_effect": "GYAa! (internal scream of excitement, possibly visualized with swirling effects)",
+      "panel_layout": "Large, impactful panel showing Aisha's smile and Ibad's reaction, possibly with background effects to emphasize the life-changing moment."
+    }
+  ]
+}
+```
+
+
+
+| **Feature**               | **Iteration 1**                                                             | **Iteration 2**                                                                   | **Iteration 3**                                                                                 |
+| ------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Setting**               | `"setting": "Crowded schoolyard, bustling with students."`                  | `"setting": "Crowded schoolyard"`                                                 | `"setting": "Crowded schoolyard, bustling with students."`                                      |
+| **Focus (Ibad POV)**      | `"focus": "Ibad's POV, seeing Aisha from afar."`                            | `"focus": "Ibad's POV, spotting Aisha"`                                           | `"focus": "Ibad's POV, overwhelmed by seeing Aisha."`                                           |
+| **Mood / Atmosphere**     | `"mood": "Initial awe and infatuation, sense of wonder."`                   | `"atmosphere": "Light, airy, innocent."`                                          | `"mood": "Humorous, awkward."` (scene 2) + `"pacing": "Brief, impactful moment"` (scene 1)      |
+| **Visual Emphasis / Cue** | `"visual_cue": "Aisha highlighted, soft glow, 'angelic' effect."`           | `"visual_emphasis": "Aisha framed ethereal, soft glow."`                          | `"visual_emphasis": "Aisha stands out, soft glow, shojo manga style."`                          |
+| **Sound Effects**         | `*POW!* (heartbeat)` and `*THUD!*`                                          | `*POW!* (heartbeat)`, `*THUD!*`                                                   | `*POW!* heartbeat impact`, `*THUD!* fall`, `GYAa! internal scream`                              |
+| **Ibad Expression**       | `"ibad_expression": "Starry-eyed, overwhelmed" / "Embarrassed, determined"` | `"facial_expression": "Determined/flustered"`                                     | `"emotion": "Embarrassment, nervousness, crimson face"`                                         |
+| **Action (Ibad)**         | `"action": "Ibad clumsily rushing towards Aisha."`                          | `"action": "Ibad rushing towards Aisha"`                                          | `"action": "Ibad clumsily rushes towards Aisha, tripping."`                                     |
+| **Reaction (Aisha)**      | `"aisha_action": "Giggling."`                                               | `"reaction": "Aisha giggling"`                                                    | `"reaction": "Aisha giggles."`                                                                  |
+| **Sound Description**     | `"sound_description": "Laughter like wind chimes, shimmering effect."`      | `"sound_description": "Laughter like wind chimes, with sparkling/musical notes."` | `"sound_description": "Laughter like wind chimes, delicate."`                                   |
+| **Dialogue (Ibad)**       | `"dialogue": "Ibad stammering 'H-hello!'"`                                  | `"dialogue": "Ibad: H-hello!"`                                                    | `"dialogue": "Ibad stammering: 'H-hello!'"`                                                     |
+| **Dialogue (Aisha)**      | Missing                                                                     | `"dialogue": "Aisha's smile"`                                                     | `"climax": "Aisha smiles at Ibad."`                                                             |
+| **Internal Monologue**    | `"[She's...an angel!]"` and `"GYAa!"`                                       | `"[She's...an angel!]"` and `"Ibad: GYAa!"`                                       | `"[She's...an angel!]"` and `"Ibad's realization: his life has irrevocably changed. GYAa!"`     |
+| **Emotional Impact**      | `"mood": "Profound, life-altering."`                                        | `"emotional_impact": "Life-changing moment for Ibad"`                             | `"emotional_impact": "Overwhelming feeling of change and excitement for Ibad."`                 |
+| **Symbolism**             | `"symbolism": "First love as sudden impact"`                                | `"visual_symbolism": "Aisha's smile as radiant, transformative"`                  | `"visual_emphasis": "Radiant/captivating smile, life-changing moment"`                          |
+| **Pacing**                | `"pacing": "Fast, comedic."` + `"Profound, life-altering."`                 | `"pacing": "Brief stillness → action" + `"Slow down time"\`                       | `"pacing": "Brief impactful moment" + `"emphasis on speed and clumsiness"\`                     |
+| **Panel Style / Layout**  | Missing                                                                     | `"panel_style": "Splash page, dynamic panels, close-ups, etc."`                   | `"panel_layout": "Wide shot → zoom, series of small panels, close-ups, large impactful panel."` |
+| **Visual Elements**       | `"visual_element": "Background fades, close-ups, tripping animation."`      | `"visual_element": "Speed lines, exaggerated blush, shining effects."`            | `"visual_style": "Exaggerated movement lines, shojo glow, red shading."`                        |
+| **Transitions**           | `"transition": "Sound effect bridges clumsy → lighter moment."`             | Missing                                                                           | Present implicitly via `"panel_layout": wide → zoom → close-up → climax."`                      |
