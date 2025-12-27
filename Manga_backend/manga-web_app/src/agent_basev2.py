@@ -12,7 +12,7 @@ import uuid
 
 
 
-# GOOGLE_API_KEY="AIzRZe4"
+# GOOGLE_API_KEY="AIzaSyCSHap71obWSsAjH9dMQwRc2_t7JK7RZe4"
 # Load environment
 _ = load_dotenv(find_dotenv())
 
