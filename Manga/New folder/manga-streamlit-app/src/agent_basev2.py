@@ -1,5 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver, InMemorySaver
+from langgraph.types import Command, interrupt
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from typing import TypedDict, Annotated, Literal, List, Optional
@@ -106,7 +107,7 @@ class PromptAnalysisResult(BaseModel):
 # -----------------------------
 # Model setup
 # -----------------------------
-model = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp")
+model = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 structured_model_MangaFeature = model.with_structured_output(MangaFeatureSchema)
 structured_model_characterList = model.with_structured_output(CharacterList)
 structured_model_director = model.with_structured_output(MangaPage)
@@ -120,6 +121,7 @@ structured_model_PromptAnalysis = model.with_structured_output(PromptAnalysisRes
 class MangaState(TypedDict):
     input_story: str
     refined_story: str
+    reviewed_story: str
     extracted_features: dict
     character_feature: dict
     scene_features: dict
@@ -128,6 +130,7 @@ class MangaState(TypedDict):
     prompt_analysis: dict
     generation_attempts: int
     max_attempts: int
+   
 
 # -----------------------------
 # Node functions (prompt-heavy)
@@ -155,11 +158,22 @@ def prompt_refinner(state: MangaState):
     """
     refine_output = model.invoke(prompt).content
     # store raw string under refined_story
-    return {"refined_story": refine_output}
+    return {"refined_story": refine_output, "user_approved": False}
 
+
+### ADDING HUMAN IN THE LOOP STEP HERE ###
+
+def review_node(state: MangaState):
+    # Ask a reviewer to edit the generated content
+    updated = interrupt({
+        "instruction": "Review and edit this content",
+        "content": state["refined_story"],
+    })
+    return {"reviewed_story": updated}
 
 def feature_extractor(state: MangaState):
-    refine_story = state['refined_story']
+    # Use user_edits if available, otherwise use refined_story
+    refine_story = state.get("reviewed_story") or state["refined_story"]
     prompt = f"""
     Return only JSON. No explanation.
 
@@ -198,7 +212,7 @@ def feature_extractor(state: MangaState):
 
 
 def character_makeup(state: MangaState):
-    refined_story = state['refined_story']
+    refined_story = state.get("reviewed_story") or state["refined_story"]
     extracted_feature = state.get('extracted_features')
 
     # Normalize extracted features
@@ -262,7 +276,7 @@ def character_makeup(state: MangaState):
 
 
 def scene_feature_extractor(state: MangaState):
-    refined_story = state['refined_story']
+    refined_story = state.get("reviewed_story") or state["refined_story"]
     extracted_feature = state.get('extracted_features')
     characters = state.get('character_feature')
 
@@ -330,7 +344,7 @@ def scene_feature_extractor(state: MangaState):
 
 
 def manga_director(state: MangaState):
-    refined_story = state['refined_story']
+    refined_story = state.get("reviewed_story") or state["refined_story"]
     features = state.get('extracted_features')
     characters = state.get('character_feature')
     scenes = state.get('scene_features')
@@ -395,14 +409,14 @@ def manga_director(state: MangaState):
 
 
 def manga_comic_generator(state: MangaState):
-    refined_story = state["refined_story"]
+    refined_story = state.get('user_edits') or state['refined_story']
     features = state.get("extracted_features")
     characters = state.get("character_feature")
     scenes = state.get("scene_features")
     panels = state.get("panel_scenes")
 
     prompt = f"""
-    You are a Manga Illustrator AI.
+    You are a black and white Manga Illustrator AI.
     Generate compact **manga-style comic panel prompts** (≤70 tokens each).
 
     # Rules:
@@ -588,32 +602,34 @@ def should_regenerate_prompts(state: MangaState):
 
 def build_workflow():
     graph = StateGraph(MangaState)
-    graph.add_node("prompt_refinner", prompt_refinner)
-    graph.add_node("feature_extractor", feature_extractor)
-    graph.add_node("character_makeup", character_makeup)
-    graph.add_node("scene_feature_extractor", scene_feature_extractor)
-    graph.add_node("manga_director", manga_director)
-    graph.add_node("manga_comic_generator", manga_comic_generator)
-    graph.add_node("prompt_analyzer", prompt_analyzer)
+    graph.add_node("prompt_refinner",prompt_refinner)
+    graph.add_node("review", review_node)
+    graph.add_node("feature_extractor",feature_extractor)
+    graph.add_node("character_makeup",character_makeup)
+    graph.add_node("scene_feature_extractor", scene_feature_extractor) 
+    graph.add_node("manga_director",manga_director)
+    graph.add_node("manga_comic_generator",manga_comic_generator)
+    # graph.add_node("prompt_analyzer", prompt_analyzer)
 
-    graph.add_edge(START, "prompt_refinner")
-    graph.add_edge("prompt_refinner", "feature_extractor")
-    graph.add_edge("feature_extractor", "character_makeup")
-    graph.add_edge("character_makeup", "scene_feature_extractor")
-    graph.add_edge("scene_feature_extractor", "manga_director")
-    graph.add_edge("manga_director", "manga_comic_generator")
-    graph.add_edge("manga_comic_generator", "prompt_analyzer")
+    #Creating Edges
 
-    graph.add_conditional_edges(
-        "prompt_analyzer",
-        should_regenerate_prompts,
-        {
-            "manga_comic_generator": "manga_comic_generator",
-            END: END
-        }
-    )
+    graph.add_edge(START,"prompt_refinner")
+    graph.add_edge("prompt_refinner", "review")
+    graph.add_edge("review", "feature_extractor")
+    # graph.add_edge("feature_extractor", END)
 
-    workflow = graph.compile()
+    # graph.add_edge("review", "feature_extractor")
+    graph.add_edge("feature_extractor","character_makeup")
+    graph.add_edge("character_makeup","scene_feature_extractor")
+    graph.add_edge("scene_feature_extractor","manga_director")
+    graph.add_edge("manga_director","manga_comic_generator")
+    #graph.add_edge("manga_comic_generator", "prompt_analyzer")
+    graph.add_edge("manga_comic_generator", END)
+
+
+    ### Addinf Persistent Human in the Loop Step Here ###
+    checkpointer=InMemorySaver()
+    workflow=graph.compile(checkpointer=checkpointer)
     return workflow
 
 

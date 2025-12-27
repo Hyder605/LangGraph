@@ -58,8 +58,7 @@ def main():
                         label="Download PNG",
                         data=buffered.getvalue(),
                         file_name=f"panel_{panel_no}.png",
-                        mime="image/png"
-    )
+                        mime="image/png")
             else:
                 st.write("No prompts generated. Please try again.")
         else:
