@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Any
 import test_diffusion_v2
 import pathlib
 from io import BytesIO
-from agent_basev2 import build_workflow
+from agent_basev2_copy import build_workflow
 from langgraph.types import Command
 import uuid
 import os
@@ -40,10 +40,13 @@ app.mount(
 
 class StoryInput(BaseModel):
     story: str
+    genre: Optional[str] = None  # "dramatic" or "magical"
 
 class StoryEdit(BaseModel):
     session_id: str
     edited_story: str
+    genre: Optional[str] = None  # "dramatic" or "magical"
+
 
 class SessionResponse(BaseModel):
     session_id: str
@@ -87,6 +90,7 @@ async def generate_story(story_input: StoryInput):
         # Run initial generation
         initial_state = {
             "input_story": story_input.story,
+            "genre": story_input.genre, 
             "generation_attempts": 0,
             "max_attempts": 5
         }
@@ -104,7 +108,8 @@ async def generate_story(story_input: StoryInput):
             "workflow": workflow,
             "config": config,
             "generated_story": generated_story,
-            "final_state": final_state
+            "final_state": final_state,
+             "genre": story_input.genre
         }
         
         return SessionResponse(
@@ -148,7 +153,8 @@ async def approve_story(story_edit: StoryEdit):
 
         # Resume workflow with edited story
         final_after_review = workflow.invoke(
-            {"edited_story": edited_story},
+            {"edited_story": edited_story,
+             "genre": story_edit.genre},
             config=config
         )
         
@@ -211,7 +217,11 @@ async def regenerate_panel(request: PanelRegenerateRequest):
         # Combine prompt with refinements if provided
         final_prompt = request.prompt
         if request.refinements and request.refinements.strip():
-            final_prompt = f"{request.prompt}\n\nRefinements: {request.refinements}"
+            final_prompt = (
+                f"{request.prompt}\n\n"
+                "Apply these refinements: "
+                f"{request.refinements}"
+            )
         
         # Folder where images will be saved
         base_folder = r"C:\Users\Haider\Desktop\Manga\LangGraph\Manga_backend\auto-manga-react-app\src\generated_images"

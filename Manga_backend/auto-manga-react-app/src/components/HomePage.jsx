@@ -20,6 +20,7 @@ function HomePage() {
         "A mysterious hooded figure appears and challenges her to a duel."
     );
     const [refinedText, setRefinedText] = useState("");
+    const [genre, setGenre] = useState(null); // "dramatic" or "magical"
 
     // IMPORTANT: Store the session ID returned by the backend
     const [sessionId, setSessionId] = useState(null);
@@ -33,13 +34,17 @@ function HomePage() {
     // -------------------------------------------------------------------------
     const handleRefineClick = async () => {
         if (!story.trim()) return;
+        if (!genre) {
+            alert("Please select a genre (Dramatic or Magical) first.");
+            return;
+        }
 
         setShowRefined(false); // Hide previous results
         setIsRefining(true);
 
         try {
-            // Call the backend API
-            const result = await mangaService.refineStory(story);
+            // Call the backend API with genre
+            const result = await mangaService.refineStory(story, genre);
 
             // 1. Store the session ID if present
             if (result.session_id) {
@@ -70,6 +75,7 @@ function HomePage() {
             setShowRefined(true);
 
             console.log("Refined Story captured:", finalRefinedText);
+            console.log("Genre selected:", genre);
 
         } catch (error) {
             console.error("Refine failed:", error);
@@ -95,7 +101,8 @@ function HomePage() {
         try {
             const payload = {
                 session_id: sessionId,
-                edited_story: refinedText || story
+                edited_story: refinedText || story,
+                genre: genre
             };
 
             console.log("Payload for /api/approve:", payload);
@@ -269,6 +276,32 @@ function HomePage() {
                             "✦ Refine with AI"
                         )}
                     </button>
+
+                    {/* Genre Selection Buttons */}
+                    <div className="mt-3 d-flex gap-2">
+                        <button
+                            className={`btn rounded-2 fw-semibold py-2 flex-grow-1 ${
+                                genre === "dramatic"
+                                    ? "btn-warning text-dark"
+                                    : "btn-outline-light text-white"
+                            }`}
+                            onClick={() => setGenre("dramatic")}
+                            disabled={isLoading || isRefining}
+                        >
+                            🎭 Dramatic
+                        </button>
+                        <button
+                            className={`btn rounded-2 fw-semibold py-2 flex-grow-1 ${
+                                genre === "magical"
+                                    ? "btn-info text-dark"
+                                    : "btn-outline-light text-white"
+                            }`}
+                            onClick={() => setGenre("magical")}
+                            disabled={isLoading || isRefining}
+                        >
+                            ✨ Magical
+                        </button>
+                    </div>
 
                     {/* Refining Animation */}
                     {isRefining && (

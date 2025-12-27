@@ -3,8 +3,8 @@ import apiClient from './api';
 
 export const mangaService = {
     // 1. "Refine with AI" button
-    refineStory: async (originalStory) => {
-        const response = await apiClient.post('/api/generate', { story: originalStory });
+    refineStory: async (originalStory, genre) => {
+        const response = await apiClient.post('/api/generate', { story: originalStory, genre: genre });
 
         return response.data;
     },

@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Any
 import test_diffusion_v2
 import pathlib
 from io import BytesIO
-from agent_basev2 import build_workflow
+from agent_basev2_copy import build_workflow
 from langgraph.types import Command
 import uuid
 import os
@@ -40,10 +40,14 @@ app.mount(
 
 class StoryInput(BaseModel):
     story: str
+    genre: Optional[str] = None  # "dramatic" or "magical"
+
 
 class StoryEdit(BaseModel):
     session_id: str
     edited_story: str
+    genre: Optional[str] = None  # "dramatic" or "magical"
+
 
 class SessionResponse(BaseModel):
     session_id: str
@@ -87,6 +91,8 @@ async def generate_story(story_input: StoryInput):
         # Run initial generation
         initial_state = {
             "input_story": story_input.story,
+            "genre": story_input.genre, 
+
             "generation_attempts": 0,
             "max_attempts": 5
         }
@@ -104,7 +110,8 @@ async def generate_story(story_input: StoryInput):
             "workflow": workflow,
             "config": config,
             "generated_story": generated_story,
-            "final_state": final_state
+            "final_state": final_state,
+            "genre": story_input.genre
         }
         
         return SessionResponse(
